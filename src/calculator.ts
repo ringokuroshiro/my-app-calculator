@@ -6,42 +6,43 @@ export default function calculator(input: InputType[]): string {
 }
 
 export function tokenize(input: InputType[]): string[] {
-    let tokenizedArray: string[] = []
-    let str = ""
+    let result: string[] = []
+    let isStillNumber = false
     let hasPoint = false
     for (const i of input) {
         if (isOperator(i)) {
-            if (str !== "") {
-                tokenizedArray.push(str)
-                str = ""
-            }
-            if (tokenizedArray[tokenizedArray.length - 1] === "+" || tokenizedArray[tokenizedArray.length - 1] === "-" || tokenizedArray[tokenizedArray.length - 1] === "*" || tokenizedArray[tokenizedArray.length - 1] === "/") {
-                tokenizedArray.splice(tokenizedArray.length - 1, 1, i)
+            // [+, -, *, /]の演算子が連続する場合,最新の[+, -, *, /]演算子を格納して直前の[+, -, *, /]演算子を捨てる
+            // "+", "-"と続いた場合"+"は捨てる
+            if (result[result.length - 1] === "+" || result[result.length - 1] === "-" || result[result.length - 1] === "*" || result[result.length - 1] === "/") {
+                result.splice(result.length - 1, 1, i)
             } else {
-                tokenizedArray.push(i)
+                result.push(i)
             }
+            isStillNumber = false
             hasPoint = false
+            continue
         }
-        else {
-            if (hasPoint) {
-                if (i === ".") {
-                    continue
-                }
-            } else {
-                if (i === ".") {
-                    hasPoint = true
-                }
+        if (hasPoint) {
+            if (i === ".") {
+                continue
             }
-            str += i
+        } else {
+            if (i === ".") {
+                hasPoint = true
+            }
+        }
+        if (isStillNumber) {
+            result.splice(result.length - 1, 1, result[result.length - 1] + i)
+        } else {
+            result.push(i)
+            isStillNumber = true
         }
     }
-    if (str !== "") {
-        tokenizedArray.push(str)
+    // 結果の配列の最初が"+"のように演算子だった場合、"0", "+"という配列に変える
+    if (isOperator(result[0])) {
+        result.unshift("0")
     }
-    if (isOperator(tokenizedArray[0])) {
-        tokenizedArray.unshift("0")
-    }
-    return tokenizedArray
+    return result
 }
 
 function isOperator(ope: string): boolean {
