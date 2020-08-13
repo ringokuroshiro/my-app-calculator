@@ -73,3 +73,9 @@ test('evaluate 0, =, 0, =, 0', () => {
     const result = evaluate(["0", "=", "0", "=", "0"])
     expect(result).toBe("0")
 });
+
+test('evaluate +, ., =, result Error', () => {
+    const result = evaluate(["+", ".", "="])
+    expect(result).toBe("Error")
+});
+

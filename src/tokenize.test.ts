@@ -88,3 +88,15 @@ test('tokenize 0, =, 0, =, 0', () => {
     const result = tokenize(["0", "=", "0", "=", "0"])
     expect(result).toStrictEqual(["0", "=", "0", "=", "0"])
 });
+
+test('tokenize +, result 0, +', () => {
+    const result = tokenize(["+"])
+    expect(result).toStrictEqual(["0", "+"])
+});
+
+test('tokenize +, -, result 0, +', () => {
+    const result = tokenize(["+", "-"])
+    expect(result).toStrictEqual(["0", "-"])
+});
+
+
